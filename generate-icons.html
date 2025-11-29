@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アイコン生成ツール</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        .buttons {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .info {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>勤怠管理アプリ アイコン生成</h1>
+
+    <div class="info">
+        <p>このページでPWA用のアイコン画像を生成できます。</p>
+        <p>「アイコンを生成」ボタンをクリックし、表示されたアイコンを右クリックして「名前を付けて画像を保存」を選択してください。</p>
+    </div>
+
+    <div class="buttons">
+        <button onclick="generateIcons()">アイコンを生成</button>
+    </div>
+
+    <div id="canvases"></div>
+
+    <script>
+        function generateIcons() {
+            const sizes = [192, 512];
+            const container = document.getElementById('canvases');
+            container.innerHTML = '';
+
+            sizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                // 背景色
+                ctx.fillStyle = '#4A90E2';
+                ctx.fillRect(0, 0, size, size);
+
+                // 時計の外枠
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size * 0.31, 0, 2 * Math.PI);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fill();
+                ctx.strokeStyle = '#E0E0E0';
+                ctx.lineWidth = size * 0.008;
+                ctx.stroke();
+
+                // 12時の位置マーク
+                ctx.fillStyle = '#4A90E2';
+                ctx.fillRect(size * 0.488, size * 0.246, size * 0.023, size * 0.059);
+
+                // 3時の位置マーク
+                ctx.fillRect(size * 0.695, size * 0.488, size * 0.059, size * 0.023);
+
+                // 6時の位置マーク
+                ctx.fillRect(size * 0.488, size * 0.695, size * 0.023, size * 0.059);
+
+                // 9時の位置マーク
+                ctx.fillRect(size * 0.246, size * 0.488, size * 0.059, size * 0.023);
+
+                // 時針
+                ctx.beginPath();
+                ctx.moveTo(size / 2, size / 2);
+                ctx.lineTo(size * 0.43, size * 0.39);
+                ctx.strokeStyle = '#333333';
+                ctx.lineWidth = size * 0.02;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // 分針
+                ctx.beginPath();
+                ctx.moveTo(size / 2, size / 2);
+                ctx.lineTo(size * 0.605, size * 0.371);
+                ctx.strokeStyle = '#666666';
+                ctx.lineWidth = size * 0.014;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+
+                // 中心の円
+                ctx.beginPath();
+                ctx.arc(size / 2, size / 2, size * 0.023, 0, 2 * Math.PI);
+                ctx.fillStyle = '#4A90E2';
+                ctx.fill();
+
+                // チェックマーク（出勤打刻のシンボル）
+                ctx.beginPath();
+                ctx.arc(size / 2, size * 0.664, size * 0.078, 0, 2 * Math.PI);
+                ctx.fillStyle = '#5CB85C';
+                ctx.fill();
+
+                // チェックマーク
+                ctx.beginPath();
+                ctx.moveTo(size * 0.477, size * 0.660);
+                ctx.lineTo(size * 0.492, size * 0.676);
+                ctx.lineTo(size * 0.523, size * 0.645);
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = size * 0.012;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+
+                // キャンバスの下にサイズとダウンロードボタンを表示
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'inline-block';
+                wrapper.style.margin = '10px';
+
+                const label = document.createElement('p');
+                label.textContent = `${size}x${size}px`;
+                label.style.textAlign = 'center';
+                label.style.fontWeight = 'bold';
+
+                const downloadBtn = document.createElement('button');
+                downloadBtn.textContent = `icon-${size}x${size}.png をダウンロード`;
+                downloadBtn.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}x${size}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                };
+
+                wrapper.appendChild(label);
+                wrapper.appendChild(canvas);
+                wrapper.appendChild(downloadBtn);
+                container.appendChild(wrapper);
+            });
+        }
+
+        // ページ読み込み時に自動生成
+        window.addEventListener('load', generateIcons);
+    </script>
+</body>
+</html>

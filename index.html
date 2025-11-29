@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="スマートフォンからワンタップで出退勤を打刻できる勤怠管理アプリ">
+    <meta name="theme-color" content="#4A90E2">
+
+    <!-- PWA設定 -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+    <!-- スタイルシート -->
+    <link rel="stylesheet" href="css/style.css?v=2">
+
+    <title>勤怠管理アプリ</title>
+</head>
+
+<body>
+    <!-- 初期設定画面 -->
+    <div id="setup-screen" class="screen hidden">
+        <div class="container">
+            <div class="setup-content">
+                <h1 class="app-title">勤怠管理アプリ</h1>
+                <p class="setup-description">ワンタップで出退勤を打刻</p>
+
+                <form id="setup-form" class="setup-form">
+                    <div class="form-group">
+                        <label for="user-name-input">お名前を入力してください</label>
+                        <input type="text" id="user-name-input" class="input-text" placeholder="例: 山田太郎" required
+                            minlength="1" maxlength="50">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">
+                        始める
+                    </button>
+                </form>
+
+                <div class="usage-info">
+                    <h3>使い方</h3>
+                    <ul>
+                        <li>出勤時: 出勤ボタンをタップ</li>
+                        <li>退勤時: 退勤ボタンをタップ</li>
+                        <li>課題完了時: 課題完了ボタンをタップ</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- メイン画面 -->
+    <div id="main-screen" class="screen hidden">
+        <!-- ヘッダー -->
+        <header class="header">
+            <h1 class="header-title">勤怠管理</h1>
+            <div class="header-user">
+                <span id="header-user-name"></span>
+                <button id="settings-btn" class="btn-icon" aria-label="設定">⚙️</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- 現在時刻表示 -->
+            <section class="current-time-section">
+                <div class="current-time-card">
+                    <div class="current-time-label">現在時刻</div>
+                    <div class="current-time" id="current-time">--:--:--</div>
+                    <div class="current-date" id="current-date">----年--月--日</div>
+                </div>
+            </section>
+
+            <!-- ステータス表示エリア -->
+            <section class="status-section">
+                <div class="status-card">
+                    <div class="status-badge" id="status-badge">未出勤</div>
+                    <div class="status-time" id="status-time">--:--</div>
+                    <div class="status-duration" id="status-duration">勤務時間: --</div>
+                </div>
+            </section>
+
+            <!-- 打刻ボタンエリア -->
+            <section class="action-section">
+                <button id="clock-in-btn" class="btn btn-clock btn-clock-in">
+                    <span class="btn-icon-large">🏢</span>
+                    <span class="btn-text">出勤</span>
+                </button>
+
+                <button id="clock-out-btn" class="btn btn-clock btn-clock-out" disabled>
+                    <span class="btn-icon-large">🏠</span>
+                    <span class="btn-text">退勤</span>
+                </button>
+
+                <button id="task-complete-btn" class="btn btn-task">
+                    <span class="btn-icon-large">✅</span>
+                    <span class="btn-text">課題完了報告</span>
+                </button>
+            </section>
+
+            <!-- 本日の打刻履歴 -->
+            <section class="history-section">
+                <h2 class="section-title">本日の記録</h2>
+                <div class="history-card">
+                    <div class="history-item">
+                        <span class="history-label">出勤時刻</span>
+                        <span class="history-value" id="today-clock-in">--:--</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-label">退勤時刻</span>
+                        <span class="history-value" id="today-clock-out">--:--</span>
+                    </div>
+                    <div class="history-item">
+                        <span class="history-label">勤務時間</span>
+                        <span class="history-value" id="today-duration">--</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ネットワーク状態 -->
+            <div id="network-status" class="network-status hidden">
+                <span class="network-icon">📡</span>
+                <span id="network-message">オフライン</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定画面 -->
+    <div id="settings-screen" class="screen hidden">
+        <div class="container">
+            <header class="screen-header">
+                <button id="back-btn" class="btn-icon" aria-label="戻る">←</button>
+                <h2>設定</h2>
+            </header>
+
+            <section class="settings-section">
+                <form id="update-name-form" class="form-group">
+                    <label for="update-user-name">ユーザー名変更</label>
+                    <input type="text" id="update-user-name" class="input-text" placeholder="新しい名前" required
+                        minlength="1" maxlength="50">
+                    <button type="submit" class="btn btn-primary">変更</button>
+                </form>
+
+                <div class="settings-item">
+                    <button id="reset-data-btn" class="btn btn-danger">
+                        全データをリセット
+                    </button>
+                    <p class="settings-note">※全ての打刻履歴が削除されます</p>
+                </div>
+
+                <div class="settings-item">
+                    <h3>バージョン情報</h3>
+                    <p>バージョン: 1.0.0</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 通知トースト -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- ローディングオーバーレイ -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js" type="module"></script>
+</body>
+
+</html>
