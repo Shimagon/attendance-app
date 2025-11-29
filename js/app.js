@@ -356,7 +356,8 @@ async function handleTaskComplete() {
 
     showLoading();
 
-    const appUrl = window.location.href;
+    // GitHub PagesのURLを使用
+    const appUrl = 'https://Shimagon.github.io/attendance-app/';
     const now = new Date();
 
     // 完了フラグを保存
